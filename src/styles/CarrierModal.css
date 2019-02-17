@@ -1,0 +1,12 @@
+.modal {
+  position: "absolute";
+  width: 40%;
+  background-color: white;
+  box-shadow: 2;
+  padding: 30px;
+  outline: "none";
+  margin: auto;
+}
+ul {
+  list-style-type: none;
+}

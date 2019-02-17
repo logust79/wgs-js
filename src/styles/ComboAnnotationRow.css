@@ -1,0 +1,28 @@
+span {
+  margin-left: 4px;
+  border-radius: 3px;
+  color: #222;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+.af {
+  background-color: rgb(87, 223, 228);
+}
+.hf {
+  background-color: rgb(202, 228, 87);
+}
+.cadd {
+  background-color: orange;
+  color: #ddd;
+}
+.hgvs {
+  background-color: #ddd;
+}
+.carrier {
+  background-color: #eee;
+  padding-right: 6px;
+}
+li.variant {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}

@@ -1,0 +1,10 @@
+span {
+  margin-left: 4px;
+  border-radius: 3px;
+  color: #222;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+.fail {
+  color: #999;
+}
