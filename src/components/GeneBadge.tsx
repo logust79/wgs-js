@@ -21,7 +21,6 @@ export default class GeneBadge extends React.Component<Props, State> {
   palette = this.props.palette || [
     "red",
     "blue",
-    "yellow",
     "green",
     "orange",
     "steelblue",

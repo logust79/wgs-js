@@ -24,11 +24,20 @@ interface Props {
 const WgsTable = (props: Props) => {
   return (
     <React.Fragment>
-      <IconButton title="Back a page" disabled={props.page <= 0 ? true : false}>
-        <ArrowBackIos onClick={() => props.onPageChange(-1)} />
+      <IconButton
+        key="back"
+        title="Back a page"
+        disabled={props.page <= 0 ? true : false}
+        onClick={() => props.onPageChange(-1)}
+      >
+        <ArrowBackIos />
       </IconButton>
-      <IconButton title="forward a page">
-        <ArrowForwardIos onClick={() => props.onPageChange(1)} />
+      <IconButton
+        key="forward"
+        title="forward a page"
+        onClick={() => props.onPageChange(1)}
+      >
+        <ArrowForwardIos />
       </IconButton>
       <Table className="wgsTable">
         <TableHead>

@@ -121,7 +121,7 @@ const FormParameters = {
       type: "checkbox",
       choices: [{ label: "At least one", value: "hasCoding", checked: false }],
       action: "eq",
-      default: false,
+      default: null,
       helperText:
         "a combo needs to at least have one coding variant, default false",
       includeNull: null

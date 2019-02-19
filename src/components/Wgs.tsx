@@ -49,16 +49,20 @@ export default class Wgs extends React.Component<object, State> {
       const filters = this.state.formParameters.filters.map(d => {
         if (d.key === e.target.name) {
           // update choices if type == checkbox
-          let choices: any = [];
+          let choices: Array<any> = [],
+            value = e.target.value;
           if (d.type === "checkbox") {
             choices = d.choices.map(c => {
               if (c.value === e.target.value) {
+                if (c.checked) {
+                  value = null;
+                }
                 return { ...c, checked: !c.checked };
               }
               return c;
             });
           }
-          return { ...d, value: e.target.value, choices };
+          return { ...d, value, choices };
         } else {
           return d;
         }
