@@ -28,7 +28,7 @@ const FormParameters = {
   filters: [
     {
       name: "gnomAD AF",
-      key: "gnomadAFLow",
+      key: "gnomadAFHigh",
       elemMatch: false,
       type: "text",
       choices: [],
@@ -39,7 +39,7 @@ const FormParameters = {
     },
     {
       name: "gnomAD HF",
-      key: "gnomadHFLow",
+      key: "gnomadHFHigh",
       elemMatch: false,
       type: "text",
       choices: [],
