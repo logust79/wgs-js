@@ -62,6 +62,38 @@ export default class ComboCellVariantRow extends React.Component<Props, State> {
       this.setState({ ...data });
     });
   }
+  toSuperscript = (str: string) => {
+    const SYM =
+      "        ⁽⁾ ⁺ ⁻  ⁰¹²³⁴⁵⁶⁷⁸⁹   ⁼   ᴬᴮ ᴰᴱ ᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾ ᴿ ᵀᵁ ᵂ         ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖ ʳˢᵗᵘᵛʷˣʸᶻ     ";
+    var z = "";
+    for (var c of str) {
+      var d = SYM[c.charCodeAt(0) - 32] || " ";
+      z += d === " " ? c : d;
+    }
+    return z;
+  };
+  toScientific(n: number | null, precision: number = 3) {
+    if (n === null) {
+      return "";
+    } else if (n === 0) {
+      return "0";
+    } else {
+      const e = Math.floor(Math.log10(n)),
+        m = n * Math.pow(10, -e);
+      return (
+        m.toPrecision(precision) + "×10" + this.toSuperscript(e.toString())
+      );
+    }
+  }
+  truncateString(s: string | null, length: number = 10) {
+    if (s === null) {
+      return "";
+    } else if (s.length > 10) {
+      return s.slice(0, 8) + "...";
+    } else {
+      return s;
+    }
+  }
   render() {
     // get gnomadAF/HF
     let gnomad: { gnomadAF: number | null; gnomadHF: number | null } = {
@@ -83,24 +115,29 @@ export default class ComboCellVariantRow extends React.Component<Props, State> {
     return (
       <li className="variant" id={this.props.variant}>
         <Tooltip title="gnomAD allele frequency" key="gnomadAF">
-          <span className="pop af">{gnomad.gnomadAF}</span>
+          <span className="pop af">{this.toScientific(gnomad.gnomadAF)}</span>
         </Tooltip>
         <Tooltip title="gnomAD homozygote frequency" key="gnomadHF">
-          <span className="pop hf">{gnomad.gnomadHF}</span>
+          <span className="pop hf">{this.toScientific(gnomad.gnomadHF)}</span>
         </Tooltip>
         <Tooltip title={this.state.hgvsc.split(",").join("\n")} key="hgvsc">
-          <span className="hgvs">{firstHgvscShort}</span>
+          <span className="hgvs">{this.truncateString(firstHgvscShort)}</span>
         </Tooltip>
         <Tooltip title={this.state.hgvsp.split(",").join("\n")} key="hgvsp">
-          <span className="hgvs">{firstHgvspShort}</span>
+          <span className="hgvs">{this.truncateString(firstHgvspShort)}</span>
         </Tooltip>
         <Tooltip title="CADD phred score" key="cadd">
           <span className="cadd">{this.state.cadd}</span>
         </Tooltip>
         <Tooltip title="Number of het carriers" key="hetCarriers">
-          <Badge badgeContent={this.state.hetCarrier.length} color="primary">
+          <Badge
+            badgeContent={this.state.hetCarrier.length}
+            showZero={true}
+            color="primary"
+          >
             <Button
               variant="contained"
+              size="small"
               className="carrier"
               onClick={() => this.handleModal("hetModal", true)}
             >
@@ -122,6 +159,7 @@ export default class ComboCellVariantRow extends React.Component<Props, State> {
             <Button
               variant="contained"
               className="carrier"
+              size="small"
               onClick={() => this.handleModal("homModal", true)}
             >
               hom

@@ -2,6 +2,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const session = require("express-session");
 const path = require("path");
 const Gene = require("./gene");
 const Variant = require("./variant");
@@ -24,11 +25,12 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(express.static(path.join(__dirname, "build")));
-
-app.get("/ping", (req, res) => {
-  return res.send("pong");
-});
+const sess = {
+  secret: "awesome ness",
+  resave: false,
+  saveUninitialized: false
+};
+app.use(session(sess));
 
 app.get("/variant/:variantId", (req, res) => {
   const { variantId } = req.params;
@@ -63,40 +65,98 @@ app.get("/gene/:symbol", (req, res) => {
   });
 });
 
-const CutoffsTransformer = cutoffs => {
-  const Texts = [
-    "gnomadAF",
-    "gnomadHF",
-    "internalAF",
-    "internalHF",
-    "distance2cdsMax"
-  ];
-  const Radios = {
-    excludeNonCoding: [""]
-  };
-  return Object.keys(cutoffs).map(key => {
-    return { id: key, type: key in ["gnomadAF", "gnomadHF", ""] };
-  });
-};
-
-app.get("/combo", (_, res) => {
+app.get("/combo", (req, res) => {
+  // initialise req.session
+  req.session.page = 0;
+  req.session.formParameters = {};
   // combo
   const limit = 20;
-  const cutoffs = {
-    gnomad_af: 0.05,
-    gnomad_hom_f: 0.0001,
-    internal_af: 0.1,
-    internal_hom_f: 0.03,
-    pop_including_none: true,
-    exclude_failed_variants: true,
-    exclude_vqsr_variants: false,
-    remove_nc: false
-  };
   Combo.find()
     .sort({ caddMean: -1 })
     .limit(limit)
     .exec((_, data) => {
-      return res.json({ success: true, data: data, cutoffs: cutoffs });
+      return res.json({ success: true, data: data });
+    });
+});
+
+app.get("/combo/page/:change", (req, res) => {
+  // page
+  const limit = 20;
+  const page = req.session.page
+    ? req.session.page + parseInt(req.params.change)
+    : parseInt(req.params.change);
+  if (page < 0) {
+    req.session.page = 0;
+  } else {
+    req.session.page = page;
+  }
+  let find = null;
+  if (
+    Object.entries(req.session.formParameters).length > 0 &&
+    req.session.formParameters.andConditions.length > 0
+  ) {
+    find = Combo.find({
+      $and: req.session.formParameters.andConditions
+    }).sort({
+      [req.session.formParameters.sortKey]: -1
+    });
+  } else {
+    find = Combo.find().sort({ caddMean: -1 });
+  }
+  find
+    .skip(limit * req.session.page)
+    .limit(limit)
+    .exec((_, data) => {
+      return res.json({ success: true, data: data });
+    });
+});
+
+app.post("/combo", (req, res) => {
+  // remove unchanged filters relative to defaults
+  const filters = req.body.formParameters.filters
+    .filter(d => d.value !== d.default)
+    .map(d => {
+      if (d.elemMatch) {
+        return d.choices
+          .filter(ele => ele.checked)
+          .map(ele => {
+            return { [d.key]: { $elemMatch: { name: ele.value, in: true } } };
+          });
+      } else if (d.type === "checkbox") {
+        return { [d.key]: d.value === d.key ? true : d.value };
+      } else if (
+        d.type === "text" &&
+        ["lte", "lt", "gte", "gt"].includes(d.action)
+      ) {
+        if (d.includeNull) {
+          return {
+            $or: [
+              { [d.key]: { [`\$${d.action}`]: Number(d.value) } },
+              { [d.key]: null }
+            ]
+          };
+        } else {
+          return { [d.key]: { [`\$${d.action}`]: Number(d.value) } };
+        }
+      }
+    });
+  const andConditions = [].concat.apply([], filters);
+  req.session.formParameters = {
+    andConditions,
+    sortKey: req.body.formParameters.sortKey.value
+  };
+  req.session.page = 0;
+  let find = null;
+  if (andConditions.length > 0) {
+    find = Combo.find({ $and: andConditions });
+  } else {
+    find = Combo.find();
+  }
+  find
+    .sort({ [req.body.formParameters.sortKey.value]: -1 })
+    .limit(20)
+    .exec((_, data) => {
+      return res.json({ success: true, data: data });
     });
 });
 
