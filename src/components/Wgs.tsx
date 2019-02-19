@@ -50,7 +50,8 @@ export default class Wgs extends React.Component<object, State> {
         if (d.key === e.target.name) {
           // update choices if type == checkbox
           let choices: Array<any> = [],
-            value = e.target.value;
+            value =
+              e.target.value.match(/^ *$/) !== null ? null : e.target.value;
           if (d.type === "checkbox") {
             choices = d.choices.map(c => {
               if (c.value === e.target.value) {

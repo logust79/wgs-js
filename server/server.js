@@ -128,6 +128,7 @@ app.post("/combo", (req, res) => {
         d.type === "text" &&
         ["lte", "lt", "gte", "gt"].includes(d.action)
       ) {
+        // gnomAD, het/hom carriers
         if (d.includeNull) {
           return {
             $or: [
@@ -138,6 +139,16 @@ app.post("/combo", (req, res) => {
         } else {
           return { [d.key]: { [`\$${d.action}`]: Number(d.value) } };
         }
+      } else if (d.type === "text" && d.action === "eq") {
+        // genes
+        return {
+          $or: d.value
+            .toUpperCase()
+            .split(" ")
+            .map(gene => {
+              return { genes: gene };
+            })
+        };
       }
     });
   const andConditions = [].concat.apply([], filters);

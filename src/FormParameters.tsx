@@ -49,16 +49,15 @@ const FormParameters = {
       includeNull: true
     },
     {
-      name: "Distance2cds",
-      key: "distance2cdsMax",
+      name: "Genes",
+      key: "genes",
       elemMatch: false,
       type: "text",
       choices: [],
-      action: "lte",
+      action: "eq",
       default: null,
-      helperText:
-        "how far away a variant is to a cds, range [0, empty(infinite)]",
-      includeNull: false
+      helperText: "gene1 GENE2",
+      includeNull: null
     },
     {
       name: "Filter",
@@ -125,6 +124,18 @@ const FormParameters = {
       helperText:
         "a combo needs to at least have one coding variant, default false",
       includeNull: null
+    },
+    {
+      name: "Distance2cds",
+      key: "distance2cdsMax",
+      elemMatch: false,
+      type: "text",
+      choices: [],
+      action: "lte",
+      default: null,
+      helperText:
+        "how far away a variant is to a cds, range [0, empty(infinite)]",
+      includeNull: false
     }
   ],
   skip: 0,
