@@ -71,12 +71,15 @@ app.get("/combo", (req, res) => {
   req.session.formParameters = {};
   // combo
   const limit = 20;
-  Combo.find()
+  const promise1 = Combo.countDocuments();
+  const promise2 = Combo.find()
     .sort({ caddMean: -1 })
     .limit(limit)
-    .exec((_, data) => {
-      return res.json({ success: true, data: data });
-    });
+    .exec();
+
+  Promise.all([promise1, promise2]).then(results => {
+    return res.json({ success: true, data: results[1], count: results[0] });
+  });
 });
 
 app.get("/combo/page/:change", (req, res) => {
@@ -157,18 +160,22 @@ app.post("/combo", (req, res) => {
     sortKey: req.body.formParameters.sortKey.value
   };
   req.session.page = 0;
-  let find = null;
+  let find = null,
+    promise1 = null;
   if (andConditions.length > 0) {
     find = Combo.find({ $and: andConditions });
+    promise1 = Combo.countDocuments({ $and: andConditions });
   } else {
     find = Combo.find();
+    promise1 = Combo.countDocuments();
   }
-  find
+  promise2 = find
     .sort({ [req.body.formParameters.sortKey.value]: -1 })
     .limit(20)
-    .exec((_, data) => {
-      return res.json({ success: true, data: data });
-    });
+    .exec();
+  Promise.all([promise1, promise2]).then(results => {
+    return res.json({ success: true, data: results[1], count: results[0] });
+  });
 });
 
 app.listen(process.env.PORT || 8080);

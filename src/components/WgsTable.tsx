@@ -19,6 +19,7 @@ interface Props {
   data: Record[];
   onPageChange: (n: number) => void;
   page: number;
+  count: number;
 }
 
 const WgsTable = (props: Props) => {
@@ -32,6 +33,7 @@ const WgsTable = (props: Props) => {
       >
         <ArrowBackIos />
       </IconButton>
+      <span className="count">{props.count} combos</span>
       <IconButton
         key="forward"
         title="forward a page"

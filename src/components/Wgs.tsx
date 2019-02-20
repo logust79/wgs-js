@@ -12,6 +12,7 @@ interface State {
   formParameters: FormProps;
   tableData: TableProps[];
   page: number;
+  count: number;
 }
 
 export default class Wgs extends React.Component<object, State> {
@@ -20,6 +21,7 @@ export default class Wgs extends React.Component<object, State> {
     this.state = {
       formParameters: FormParameters,
       tableData: [{ variants: [], genes: [] }],
+      count: 0,
       page: 0
     };
   }
@@ -29,7 +31,8 @@ export default class Wgs extends React.Component<object, State> {
       this.setState({
         tableData: res.data.data.map((d: any) => {
           return { variants: d.variants, genes: d.genes };
-        })
+        }),
+        count: res.data.count
       });
     });
   }
@@ -93,12 +96,13 @@ export default class Wgs extends React.Component<object, State> {
       this.setState({
         tableData: res.data.data.map((d: any) => {
           return { variants: d.variants, genes: d.genes };
-        })
+        }),
+        count: res.data.count
       });
     });
   };
   render() {
-    const { formParameters, tableData, page } = this.state;
+    const { formParameters, tableData, page, count } = this.state;
     return (
       <React.Fragment>
         <div className="sidebar">
@@ -116,6 +120,7 @@ export default class Wgs extends React.Component<object, State> {
             data={tableData}
             onPageChange={this.onPageChange}
             page={page}
+            count={count}
           />
         </div>
       </React.Fragment>
