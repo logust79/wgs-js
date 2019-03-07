@@ -7,6 +7,7 @@ import "../styles/Wgs.css";
 import FormParameters from "../FormParameters";
 import WgsTable, { Record as TableProps } from "./WgsTable";
 import { Props as FormProps } from "./Form";
+import * as lodash from "lodash";
 
 interface State {
   formParameters: FormProps;
@@ -37,44 +38,46 @@ export default class Wgs extends React.Component<object, State> {
     });
   }
 
-  onChange = (e: any) => {
+  onChange = (e: React.FormEvent<HTMLInputElement>) => {
     // update value of cutoffs
-    if (e.target.name === "sortKey") {
-      // this one is special, need to deal separately
-      const sortKey = {
-        ...this.state.formParameters.sortKey,
-        value: e.target.value
-      };
-      this.setState({
-        formParameters: { ...this.state.formParameters, sortKey }
-      });
-    } else {
-      const filters = this.state.formParameters.filters.map(d => {
-        if (d.key === e.target.name) {
-          // update choices if type == checkbox
-          let choices: Array<any> = [],
-            value =
-              e.target.value.match(/^ *$/) !== null ? null : e.target.value;
-          if (d.type === "checkbox") {
-            choices = d.choices.map(c => {
-              if (c.value === e.target.value) {
-                if (c.checked) {
-                  value = null;
+    const { name, value } = e.currentTarget;
+    lodash.debounce((name: string, value) => {
+      if (name === "sortKey") {
+        // this one is special, need to deal separately
+        const sortKey = {
+          ...this.state.formParameters.sortKey,
+          value
+        };
+        this.setState({
+          formParameters: { ...this.state.formParameters, sortKey }
+        });
+      } else {
+        const filters = this.state.formParameters.filters.map(d => {
+          if (d.key === name) {
+            // update choices if type == checkbox
+            let choices: Array<any> = [],
+              V = value.match(/^ *$/) !== null ? null : value;
+            if (d.type === "checkbox") {
+              choices = d.choices.map(c => {
+                if (c.value === value) {
+                  if (c.checked) {
+                    V = null;
+                  }
+                  return { ...c, checked: !c.checked };
                 }
-                return { ...c, checked: !c.checked };
-              }
-              return c;
-            });
+                return c;
+              });
+            }
+            return { ...d, value: V, choices };
+          } else {
+            return d;
           }
-          return { ...d, value, choices };
-        } else {
-          return d;
-        }
-      });
-      this.setState({
-        formParameters: { ...this.state.formParameters, filters }
-      });
-    }
+        });
+        this.setState({
+          formParameters: { ...this.state.formParameters, filters }
+        });
+      }
+    })(name, value);
   };
 
   onPageChange = (n: number) => {
