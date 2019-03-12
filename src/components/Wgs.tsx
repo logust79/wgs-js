@@ -8,7 +8,7 @@ import "../styles/Wgs.css";
 import FormParameters from "../FormParameters";
 import WgsTable, { Record as TableProps } from "./WgsTable";
 import { Props as FormProps } from "./Form";
-import * as lodash from "lodash";
+//import * as lodash from "lodash";
 
 interface State {
   formParameters: FormProps;
@@ -30,9 +30,20 @@ export default class Wgs extends React.Component<Props, State> {
 
   componentDidMount() {
     const { collectionName } = this.props.match.params;
+    const { filters } = this.state.formParameters;
     axios.get(`/sample/${collectionName}`).then(res => {
       console.log(res);
+      const newFilters = filters.map((param: any) => {
+        console.log(param);
+        if (param.key === "gnomadAFHigh") {
+          return { ...param, value: res.data.parameter.parameter.gnomad_af };
+        } else if (param.key === "gnomadHFHigh") {
+          return { ...param, value: res.data.parameter.parameter.gnomad_hom_f };
+        }
+        return param;
+      });
       this.setState({
+        formParameters: { ...this.state.formParameters, filters: newFilters },
         tableData: res.data.data.map((d: any) => {
           return { variants: d.variants, genes: d.genes };
         }),
@@ -44,43 +55,41 @@ export default class Wgs extends React.Component<Props, State> {
   onChange = (e: React.FormEvent<HTMLInputElement>) => {
     // update value of cutoffs
     const { name, value } = e.currentTarget;
-    lodash.debounce((name: string, value) => {
-      if (name === "sortKey") {
-        // this one is special, need to deal separately
-        const sortKey = {
-          ...this.state.formParameters.sortKey,
-          value
-        };
-        this.setState({
-          formParameters: { ...this.state.formParameters, sortKey }
-        });
-      } else {
-        const filters = this.state.formParameters.filters.map(d => {
-          if (d.key === name) {
-            // update choices if type == checkbox
-            let choices: Array<any> = [],
-              V = value.match(/^ *$/) !== null ? null : value;
-            if (d.type === "checkbox") {
-              choices = d.choices.map(c => {
-                if (c.value === value) {
-                  if (c.checked) {
-                    V = null;
-                  }
-                  return { ...c, checked: !c.checked };
+    if (name === "sortKey") {
+      // this one is special, need to deal separately
+      const sortKey = {
+        ...this.state.formParameters.sortKey,
+        value
+      };
+      this.setState({
+        formParameters: { ...this.state.formParameters, sortKey }
+      });
+    } else {
+      const filters = this.state.formParameters.filters.map(d => {
+        if (d.key === name) {
+          // update choices if type == checkbox
+          let choices: Array<any> = [],
+            V = value.match(/^ *$/) !== null ? null : value;
+          if (d.type === "checkbox") {
+            choices = d.choices.map(c => {
+              if (c.value === value) {
+                if (c.checked) {
+                  V = null;
                 }
-                return c;
-              });
-            }
-            return { ...d, value: V, choices };
-          } else {
-            return d;
+                return { ...c, checked: !c.checked };
+              }
+              return c;
+            });
           }
-        });
-        this.setState({
-          formParameters: { ...this.state.formParameters, filters }
-        });
-      }
-    }, 300)(name, value);
+          return { ...d, value: V, choices };
+        } else {
+          return d;
+        }
+      });
+      this.setState({
+        formParameters: { ...this.state.formParameters, filters }
+      });
+    }
   };
 
   onPageChange = (n: number) => {

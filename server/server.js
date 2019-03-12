@@ -85,9 +85,14 @@ app.get("/sample/:collectionName", (req, res) => {
     .sort({ caddMean: -1 })
     .limit(limit)
     .exec();
-
-  Promise.all([promise1, promise2]).then(results => {
-    return res.json({ success: true, data: results[1], count: results[0] });
+  const promise3 = Parameter.findOne({ collectionName: sample }).exec();
+  Promise.all([promise1, promise2, promise3]).then(results => {
+    return res.json({
+      success: true,
+      data: results[1],
+      count: results[0],
+      parameter: results[2]
+    });
   });
 });
 

@@ -33,7 +33,7 @@ const FormParameters = {
       type: "text",
       choices: [],
       action: "lte",
-      default: 0.05,
+      default: "",
       helperText: "gnomAD AF cutoff, range [0, 0.05]",
       includeNull: true
     },
@@ -44,7 +44,7 @@ const FormParameters = {
       type: "text",
       choices: [],
       action: "lte",
-      default: 0.0001,
+      default: "",
       helperText: "gnomAD hom frequency cutoff, range [0, 0.0001]",
       includeNull: true
     },

@@ -60,6 +60,7 @@ class Collections extends React.Component<Props, State> {
       this.setState({
         collections: res.data.data
           .sort((a: Sample, b: Sample) => {
+            // sort collections
             if (a.sampleId < b.sampleId) {
               return -1;
             } else if (
@@ -71,6 +72,7 @@ class Collections extends React.Component<Props, State> {
             return 1;
           })
           .map((s: Sample) => {
+            // set state
             const { moi } = s.parameter;
             return {
               name: s.sampleId,
