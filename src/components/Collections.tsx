@@ -5,8 +5,8 @@ import axios from "axios";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
 import "../styles/Collections.css";
-//import * as lodash from "lodash";
 
 interface Collection {
   name: string;
@@ -39,6 +39,15 @@ class Collections extends React.Component<Props, State> {
       ]
     };
   }
+
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // update value of cutoffs
+    const { value } = e.currentTarget;
+    this.setState({
+      searchString: value
+    });
+  };
+
   componentDidMount() {
     const url = (this.props.baseUrl ? this.props.baseUrl : "") + "/collections";
     axios.get(url).then(res => {
@@ -59,32 +68,44 @@ class Collections extends React.Component<Props, State> {
   render() {
     const { searchString, collections } = this.state;
     return (
-      <div className="main">
-        {collections.map(sample => {
-          if (
-            !searchString ||
-            sample.name
-              .toLocaleLowerCase()
-              .indexOf(searchString.toLocaleLowerCase())
-          ) {
-            return (
-              <Card key={sample.collectionName} className="card">
-                <CardContent>
-                  <div className="card-div">
-                    <Typography variant="h6">{sample.name}</Typography>
-                    <Typography variant="subtitle2">{sample.moi}</Typography>
-                  </div>
-                  <Typography variant="body2">
-                    <Link to={sample.link}>Click to see details</Link>
-                  </Typography>
-                </CardContent>
-              </Card>
-            );
-          } else {
-            return;
-          }
-        })}
-      </div>
+      <React.Fragment>
+        <div className="search-bar">
+          <TextField
+            label="Search field"
+            type="search"
+            margin="normal"
+            onChange={this.onChange}
+            value={this.state.searchString}
+          />
+        </div>
+        <div className="main">
+          {collections.map(sample => {
+            console.log(sample.name, searchString);
+            if (
+              !searchString ||
+              sample.name
+                .toLocaleLowerCase()
+                .indexOf(searchString.toLocaleLowerCase()) !== -1
+            ) {
+              return (
+                <Card key={sample.collectionName} className="card">
+                  <CardContent>
+                    <div className="card-div">
+                      <Typography variant="h6">{sample.name}</Typography>
+                      <Typography variant="subtitle2">{sample.moi}</Typography>
+                    </div>
+                    <Typography variant="body2">
+                      <Link to={sample.link}>Click to see details</Link>
+                    </Typography>
+                  </CardContent>
+                </Card>
+              );
+            } else {
+              return;
+            }
+          })}
+        </div>
+      </React.Fragment>
     );
   }
 }

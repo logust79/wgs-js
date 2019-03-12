@@ -81,7 +81,7 @@ export default class Wgs extends React.Component<Props, State> {
           formParameters: { ...this.state.formParameters, filters }
         });
       }
-    })(name, value);
+    }, 300)(name, value);
   };
 
   onPageChange = (n: number) => {

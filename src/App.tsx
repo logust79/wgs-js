@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
 import Wgs from "./components/Wgs";
 import Collections from "./components/Collections";
+//import * as lodash from "lodash";
 
 class App extends React.Component<Object, Object> {
   public render() {
