@@ -128,7 +128,9 @@ app.get("/sample/:collectionName/page/:change", (req, res) => {
     });
 });
 
-app.post("/combo", (req, res) => {
+app.post("/sample/:collectionName", (req, res) => {
+  const sample = req.params.collectionName;
+  const Combo = mongoose.model(sample, ComboSchema, sample);
   // remove unchanged filters relative to defaults
   const filters = req.body.formParameters.filters
     .filter(d => d.value !== d.default)
@@ -169,11 +171,13 @@ app.post("/combo", (req, res) => {
       }
     });
   const andConditions = [].concat.apply([], filters);
-  req.session.formParameters = {
-    andConditions,
-    sortKey: req.body.formParameters.sortKey.value
+  req.session[sample] = {
+    formParameters: {
+      andConditions,
+      sortKey: req.body.formParameters.sortKey.value
+    },
+    page: 0
   };
-  req.session.page = 0;
   let find = null,
     promise1 = null;
   if (andConditions.length > 0) {

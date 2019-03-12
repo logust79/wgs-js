@@ -98,8 +98,8 @@ export default class Wgs extends React.Component<Props, State> {
     e.preventDefault();
     // get our form data out of state
     const { formParameters } = this.state;
-
-    axios.post("/combo", { formParameters }).then(res => {
+    const { collectionName } = this.props.match.params;
+    axios.post(`/sample/${collectionName}`, { formParameters }).then(res => {
       this.setState({
         tableData: res.data.data.map((d: any) => {
           return { variants: d.variants, genes: d.genes };
