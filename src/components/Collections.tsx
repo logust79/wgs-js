@@ -15,6 +15,12 @@ interface Collection {
   show: boolean;
   collectionName: string;
 }
+
+interface Sample {
+  sampleId: string;
+  collectionName: string;
+  parameter: any;
+}
 interface State {
   collections: Collection[];
   searchString: string;
@@ -52,16 +58,28 @@ class Collections extends React.Component<Props, State> {
     const url = (this.props.baseUrl ? this.props.baseUrl : "") + "/collections";
     axios.get(url).then(res => {
       this.setState({
-        collections: res.data.data.map((s: any) => {
-          const { moi } = s.parameter;
-          return {
-            name: s.sampleId,
-            moi: moi === "r" ? "recessive" : moi === "d" ? "dominant" : moi,
-            collectionName: s.collectionName,
-            link: `/sample/${s.collectionName}`,
-            show: true
-          };
-        })
+        collections: res.data.data
+          .sort((a: Sample, b: Sample) => {
+            if (a.sampleId < b.sampleId) {
+              return -1;
+            } else if (
+              a.sampleId === b.sampleId &&
+              a.parameter.moi < b.parameter.moi
+            ) {
+              return -1;
+            }
+            return 1;
+          })
+          .map((s: Sample) => {
+            const { moi } = s.parameter;
+            return {
+              name: s.sampleId,
+              moi: moi === "r" ? "recessive" : moi === "d" ? "dominant" : moi,
+              collectionName: s.collectionName,
+              link: `/sample/${s.collectionName}`,
+              show: true
+            };
+          })
       });
     });
   }

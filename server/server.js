@@ -33,7 +33,9 @@ const sess = {
 };
 app.use(session(sess));
 
-app.get("/collections", (_, res) => {
+app.get("/collections", (req, res) => {
+  req.session.page = 0;
+  req.session.formParameters = {};
   Parameter.find({}, (_, data) => {
     return res.json({ success: true, data: data });
   });
@@ -72,13 +74,12 @@ app.get("/gene/:symbol", (req, res) => {
   });
 });
 
-app.get("/sample/:collectionId", (req, res) => {
+app.get("/sample/:collectionName", (req, res) => {
   // initialise req.session
   // req.session.page = 0;
   // req.session.formParameters = {};
   // sample
-  const sample = req.params.collectionId;
-  console.log(sample);
+  const sample = req.params.collectionName;
   const Combo = mongoose.model(sample, ComboSchema, sample);
   const limit = 20;
   const promise1 = Combo.countDocuments();
@@ -92,9 +93,12 @@ app.get("/sample/:collectionId", (req, res) => {
   });
 });
 
-app.get("/sample/:collectionId/page/:change", (req, res) => {
+app.get("/sample/:collectionName/page/:change", (req, res) => {
   // page
   const limit = 20;
+  console.log(req.session);
+  const sample = req.params.collectionName;
+  const Combo = mongoose.model(sample, ComboSchema, sample);
   const page = req.session.page
     ? req.session.page + parseInt(req.params.change)
     : parseInt(req.params.change);

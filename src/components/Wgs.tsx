@@ -30,7 +30,6 @@ export default class Wgs extends React.Component<Props, State> {
 
   componentDidMount() {
     const { collectionName } = this.props.match.params;
-    console.log(this.props.match.params);
     axios.get(`/sample/${collectionName}`).then(res => {
       console.log(res);
       this.setState({
@@ -85,7 +84,8 @@ export default class Wgs extends React.Component<Props, State> {
   };
 
   onPageChange = (n: number) => {
-    axios.get(`/combo/page/${n}`).then(res => {
+    const { collectionName } = this.props.match.params;
+    axios.get(`/sample/${collectionName}/page/${n}`).then(res => {
       this.setState({
         tableData: res.data.data.map((d: any) => {
           return { variants: d.variants, genes: d.genes };
