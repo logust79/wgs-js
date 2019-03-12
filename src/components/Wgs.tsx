@@ -1,5 +1,6 @@
 import * as React from "react";
 //import MaterialIcon from "@material/react-material-icon";
+import { RouteComponentProps } from "react-router-dom";
 import axios from "axios";
 import "@material/react-text-field/dist/text-field.css";
 import Form from "./Form";
@@ -15,10 +16,10 @@ interface State {
   page: number;
   count: number;
 }
-
-export default class Wgs extends React.Component<object, State> {
-  constructor(_: object) {
-    super(_);
+interface Props extends RouteComponentProps<any> {}
+export default class Wgs extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
     this.state = {
       formParameters: FormParameters,
       tableData: [{ variants: [], genes: [] }],
@@ -28,7 +29,10 @@ export default class Wgs extends React.Component<object, State> {
   }
 
   componentDidMount() {
-    axios.get("/combo").then(res => {
+    const { collectionName } = this.props.match.params;
+    console.log(this.props.match.params);
+    axios.get(`/sample/${collectionName}`).then(res => {
+      console.log(res);
       this.setState({
         tableData: res.data.data.map((d: any) => {
           return { variants: d.variants, genes: d.genes };

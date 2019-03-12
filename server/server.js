@@ -4,11 +4,12 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const path = require("path");
-const Gene = require("./gene");
-const Variant = require("./variant");
-const Combo = require("./combo");
+const Gene = require("./models/gene");
+const Variant = require("./models/variant");
+const Parameter = require("./models/parameter");
+const ComboSchema = require("./models/combo");
 // connect to db
-const dbRoute = "mongodb://localhost:27017/3002";
+const dbRoute = "mongodb://localhost:27017/UKIRDC-WGS";
 mongoose.connect(dbRoute, { useNewUrlParser: true });
 
 let db = mongoose.connection;
@@ -31,6 +32,12 @@ const sess = {
   saveUninitialized: false
 };
 app.use(session(sess));
+
+app.get("/collections", (_, res) => {
+  Parameter.find({}, (_, data) => {
+    return res.json({ success: true, data: data });
+  });
+});
 
 app.get("/variant/:variantId", (req, res) => {
   const { variantId } = req.params;
@@ -65,11 +72,14 @@ app.get("/gene/:symbol", (req, res) => {
   });
 });
 
-app.get("/combo", (req, res) => {
+app.get("/sample/:collectionId", (req, res) => {
   // initialise req.session
-  req.session.page = 0;
-  req.session.formParameters = {};
-  // combo
+  // req.session.page = 0;
+  // req.session.formParameters = {};
+  // sample
+  const sample = req.params.collectionId;
+  console.log(sample);
+  const Combo = mongoose.model(sample, ComboSchema, sample);
   const limit = 20;
   const promise1 = Combo.countDocuments();
   const promise2 = Combo.find()
@@ -82,7 +92,7 @@ app.get("/combo", (req, res) => {
   });
 });
 
-app.get("/combo/page/:change", (req, res) => {
+app.get("/sample/:collectionId/page/:change", (req, res) => {
   // page
   const limit = 20;
   const page = req.session.page
