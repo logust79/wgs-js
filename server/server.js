@@ -34,8 +34,6 @@ const sess = {
 app.use(session(sess));
 
 app.get("/collections", (req, res) => {
-  req.session.page = 0;
-  req.session.formParameters = {};
   Parameter.find({}, (_, data) => {
     return res.json({ success: true, data: data });
   });
@@ -96,32 +94,34 @@ app.get("/sample/:collectionName", (req, res) => {
 app.get("/sample/:collectionName/page/:change", (req, res) => {
   // page
   const limit = 20;
-  console.log(req.session);
   const sample = req.params.collectionName;
   const Combo = mongoose.model(sample, ComboSchema, sample);
-  const page = req.session.page
-    ? req.session.page + parseInt(req.params.change)
-    : parseInt(req.params.change);
+  let collection = req.session[sample] || {
+    page: 0,
+    formParameters: {}
+  };
+  const page = collection.page + parseInt(req.params.change);
   if (page < 0) {
-    req.session.page = 0;
+    collection.page = 0;
   } else {
-    req.session.page = page;
+    collection.page = page;
   }
+  req.session[sample] = collection;
   let find = null;
   if (
-    Object.entries(req.session.formParameters).length > 0 &&
-    req.session.formParameters.andConditions.length > 0
+    Object.entries(collection.formParameters).length > 0 &&
+    collection.formParameters.andConditions.length > 0
   ) {
     find = Combo.find({
-      $and: req.session.formParameters.andConditions
+      $and: collection.formParameters.andConditions
     }).sort({
-      [req.session.formParameters.sortKey]: -1
+      [collection.formParameters.sortKey]: -1
     });
   } else {
     find = Combo.find().sort({ caddMean: -1 });
   }
   find
-    .skip(limit * req.session.page)
+    .skip(limit * collection.page)
     .limit(limit)
     .exec((_, data) => {
       return res.json({ success: true, data: data });
