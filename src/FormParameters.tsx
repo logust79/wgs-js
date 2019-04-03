@@ -49,6 +49,17 @@ const FormParameters = {
       includeNull: true
     },
     {
+      name: "Chromosomes",
+      key: "chromosomes",
+      elemMatch: false,
+      type: "text",
+      choices: [],
+      action: "eq",
+      default: null,
+      helperText: "1 X",
+      includeNull: null
+    },
+    {
       name: "Genes",
       key: "genes",
       elemMatch: false,

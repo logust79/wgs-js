@@ -164,6 +164,12 @@ app.post("/sample/:collectionName", (req, res) => {
           return { [d.key]: { [`\$${d.action}`]: Number(d.value) } };
         }
       } else if (d.type === "text" && d.action === "eq") {
+        if (d.key === "chromosomes") {
+          // chromosomes
+          return {
+            chrom: { $in: d.value.toUpperCase().split(" ") }
+          };
+        }
         // genes
         return {
           $or: d.value
