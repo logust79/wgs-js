@@ -10,6 +10,7 @@ import "../styles/Collections.css";
 
 interface Collection {
   name: string;
+  familyId: string;
   moi: "recessive" | "dominant" | "";
   link: string;
   show: boolean;
@@ -18,6 +19,7 @@ interface Collection {
 
 interface Sample {
   sampleId: string;
+  familyId: string;
   collectionName: string;
   parameter: any;
 }
@@ -37,6 +39,7 @@ class Collections extends React.Component<Props, State> {
       collections: [
         {
           name: "",
+          familyId: "",
           moi: "",
           link: "",
           collectionName: "",
@@ -76,6 +79,7 @@ class Collections extends React.Component<Props, State> {
             const { moi } = s.parameter;
             return {
               name: s.sampleId,
+              familyId: s.familyId,
               moi: moi === "r" ? "recessive" : moi === "d" ? "dominant" : moi,
               collectionName: s.collectionName,
               link: `/sample/${s.collectionName}`,
@@ -111,6 +115,7 @@ class Collections extends React.Component<Props, State> {
                 <Card key={sample.collectionName} className="card">
                   <CardContent>
                     <div className="card-div">
+                      <Typography variant="h6">{sample.familyId}</Typography>
                       <Typography variant="h6">{sample.name}</Typography>
                       <Typography variant="subtitle2">{sample.moi}</Typography>
                     </div>
