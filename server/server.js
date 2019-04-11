@@ -4,12 +4,13 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const path = require("path");
+require("dotenv").config({ path: path.resolve(process.cwd(), ".env.local") });
 const Gene = require("./models/gene");
 const Variant = require("./models/variant");
 const Parameter = require("./models/parameter");
 const ComboSchema = require("./models/combo");
 // connect to db
-const dbRoute = "mongodb://localhost:27017/UKIRDC-WGS";
+const dbRoute = process.env.DB_ROUTE;
 mongoose.connect(dbRoute, { useNewUrlParser: true });
 
 let db = mongoose.connection;

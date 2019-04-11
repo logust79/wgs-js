@@ -64,9 +64,12 @@ class Collections extends React.Component<Props, State> {
         collections: res.data.data
           .sort((a: Sample, b: Sample) => {
             // sort collections
-            if (a.sampleId < b.sampleId) {
+            if (a.familyId < b.familyId) {
+              return -1;
+            } else if (a.familyId === b.familyId && a.sampleId < b.sampleId) {
               return -1;
             } else if (
+              a.familyId === b.familyId &&
               a.sampleId === b.sampleId &&
               a.parameter.moi < b.parameter.moi
             ) {
