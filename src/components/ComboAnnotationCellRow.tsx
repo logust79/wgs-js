@@ -8,6 +8,7 @@ import "../styles/ComboAnnotationRow.css";
 
 export interface Props {
   variant: string;
+  baseUrl: String;
 }
 
 interface Pop {
@@ -57,10 +58,12 @@ export default class ComboCellVariantRow extends React.Component<Props, State> {
     }
   };
   componentDidMount() {
-    axios.get(`/variant/${this.props.variant}`).then(res => {
-      const { data } = res.data;
-      this.setState({ ...data });
-    });
+    axios
+      .get(`${this.props.baseUrl}/variant/${this.props.variant}`)
+      .then(res => {
+        const { data } = res.data;
+        this.setState({ ...data });
+      });
   }
   toSuperscript = (str: string) => {
     const SYM =

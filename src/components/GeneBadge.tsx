@@ -6,6 +6,7 @@ import "../styles/GeneBadge.css";
 export interface Props {
   gene: string;
   palette?: Array<string>;
+  baseUrl: String;
 }
 
 interface KnownGene {
@@ -34,7 +35,7 @@ export default class GeneBadge extends React.Component<Props, State> {
     };
   }
   componentDidMount() {
-    axios.get(`/gene/${this.props.gene}`).then(res => {
+    axios.get(`${this.props.baseUrl}/gene/${this.props.gene}`).then(res => {
       this.setState({
         data: res.data.data.map((d: any, i: number) => {
           return {

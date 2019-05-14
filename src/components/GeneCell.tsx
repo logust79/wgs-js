@@ -4,11 +4,12 @@ import GeneBadge from "./GeneBadge";
 
 export interface Props {
   genes: Array<string>;
+  baseUrl: String;
 }
 
 const GeneCell = (props: Props) => {
   const content = props.genes.map(gene => {
-    return <GeneBadge gene={gene} key={gene} />;
+    return <GeneBadge gene={gene} key={gene} baseUrl={props.baseUrl} />;
   });
   return <TableCell>{content}</TableCell>;
 };

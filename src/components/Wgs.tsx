@@ -16,7 +16,9 @@ interface State {
   page: number;
   count: number;
 }
-interface Props extends RouteComponentProps<any> {}
+interface Props extends RouteComponentProps<any> {
+  baseUrl: String;
+}
 export default class Wgs extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -30,8 +32,13 @@ export default class Wgs extends React.Component<Props, State> {
 
   componentDidMount() {
     const { collectionName } = this.props.match.params;
+    const url =
+      (this.props.baseUrl ? this.props.baseUrl : "") +
+      "/sample/" +
+      collectionName;
+    console.log(url);
     const { filters } = this.state.formParameters;
-    axios.get(`/sample/${collectionName}`).then(res => {
+    axios.get(url).then(res => {
       console.log(res);
       const newFilters = filters.map((param: any) => {
         console.log(param);
@@ -94,7 +101,10 @@ export default class Wgs extends React.Component<Props, State> {
 
   onPageChange = (n: number) => {
     const { collectionName } = this.props.match.params;
-    axios.get(`/sample/${collectionName}/page/${n}`).then(res => {
+    const url =
+      (this.props.baseUrl ? this.props.baseUrl : "") +
+      `/sample/${collectionName}/page/${n}`;
+    axios.get(url).then(res => {
       this.setState({
         tableData: res.data.data.map((d: any) => {
           return { variants: d.variants, genes: d.genes };
@@ -108,7 +118,10 @@ export default class Wgs extends React.Component<Props, State> {
     // get our form data out of state
     const { formParameters } = this.state;
     const { collectionName } = this.props.match.params;
-    axios.post(`/sample/${collectionName}`, { formParameters }).then(res => {
+    const url =
+      (this.props.baseUrl ? this.props.baseUrl : "") +
+      `/sample/${collectionName}`;
+    axios.post(url, { formParameters }).then(res => {
       this.setState({
         tableData: res.data.data.map((d: any) => {
           return { variants: d.variants, genes: d.genes };
@@ -137,6 +150,7 @@ export default class Wgs extends React.Component<Props, State> {
             onPageChange={this.onPageChange}
             page={page}
             count={count}
+            baseUrl={this.props.baseUrl}
           />
         </div>
       </React.Fragment>

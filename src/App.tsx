@@ -7,16 +7,22 @@ import Collections from "./components/Collections";
 
 class App extends React.Component<Object, Object> {
   public render() {
+    const props = { baseUrl: "http://localhost:8080" };
     return (
       <Router>
         <div className="App">
           <Switch>
-            <Route exact strict path="/" component={Collections} />
+            <Route
+              exact
+              strict
+              path="/"
+              render={routeProps => <Collections {...routeProps} {...props} />}
+            />
             <Route
               exact
               strict
               path="/sample/:collectionName"
-              component={Wgs}
+              render={routeProps => <Wgs {...routeProps} {...props} />}
             />
           </Switch>
         </div>

@@ -20,6 +20,7 @@ interface Props {
   onPageChange: (n: number) => void;
   page: number;
   count: number;
+  baseUrl: String;
 }
 
 const WgsTable = (props: Props) => {
@@ -54,9 +55,12 @@ const WgsTable = (props: Props) => {
         <TableBody>
           {props.data.map(row => (
             <TableRow key={row.variants.join(",")}>
-              <ComboCell variants={row.variants} />
-              <ComboAnnotationCell variants={row.variants} />
-              <GeneCell genes={row.genes} />
+              <ComboCell variants={row.variants} baseUrl={props.baseUrl} />
+              <ComboAnnotationCell
+                variants={row.variants}
+                baseUrl={props.baseUrl}
+              />
+              <GeneCell genes={row.genes} baseUrl={props.baseUrl} />
             </TableRow>
           ))}
         </TableBody>

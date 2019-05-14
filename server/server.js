@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
+const cors = require("cors");
 const path = require("path");
 require("dotenv").config({ path: path.resolve(process.cwd(), ".env.local") });
 const Gene = require("./models/gene");
@@ -24,6 +25,12 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 const app = express();
 
+const corsOptions = {
+  origin: "*",
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
